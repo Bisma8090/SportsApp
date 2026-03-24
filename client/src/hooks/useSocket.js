@@ -10,60 +10,61 @@ import {
 
 const SOCKET_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
+// Module level pe rakho — React ke bahar
 let socketInstance = null;
+let listenersAttached = false; // 👈 ye add karo
 
 export const useSocket = () => {
   const dispatch = useDispatch();
-  const socketRef = useRef(null);
 
   useEffect(() => {
+    // Sirf ek baar connection banao
     if (!socketInstance) {
       socketInstance = io(SOCKET_URL, {
         transports: ["websocket", "polling"],
       });
     }
-    socketRef.current = socketInstance;
 
-    const socket = socketRef.current;
+    // Sirf ek baar listeners lagao
+    if (!listenersAttached) {
+      listenersAttached = true;
 
-    socket.on("connect", () => {
-      dispatch(setConnected(true));
-    });
+      socketInstance.on("connect", () => {
+        dispatch(setConnected(true));
+        console.log("✅ Socket connected");
+      });
 
-    socket.on("disconnect", () => {
-      dispatch(setConnected(false));
-    });
+      socketInstance.on("disconnect", () => {
+        dispatch(setConnected(false));
+        console.log("❌ Socket disconnected");
+      });
 
-    socket.on("matches:update", (matches) => {
-      dispatch(setLiveMatches(matches));
-    });
+      socketInstance.on("matches:update", (matches) => {
+        dispatch(setLiveMatches(matches));
+      });
 
-    socket.on("match:detail", (match) => {
-      dispatch(setLiveMatchDetail(match));
-    });
+      socketInstance.on("match:detail", (match) => {
+        dispatch(setLiveMatchDetail(match));
+      });
 
-    socket.on("match:event", (payload) => {
-      dispatch(addMatchEvent(payload));
-    });
+      socketInstance.on("match:event", (payload) => {
+        dispatch(addMatchEvent(payload));
+      });
+    }
 
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-      socket.off("matches:update");
-      socket.off("match:detail");
-      socket.off("match:event");
-    };
+    // Cleanup mein sirf listeners remove karo, connection nahi todna
+    return () => {};
   }, [dispatch]);
 
   const subscribeToMatch = (matchId) => {
-    if (socketRef.current) {
-      socketRef.current.emit("subscribe:match", matchId);
+    if (socketInstance) {
+      socketInstance.emit("subscribe:match", matchId);
     }
   };
 
   const unsubscribeFromMatch = (matchId) => {
-    if (socketRef.current) {
-      socketRef.current.emit("unsubscribe:match", matchId);
+    if (socketInstance) {
+      socketInstance.emit("unsubscribe:match", matchId);
     }
   };
 

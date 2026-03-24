@@ -200,7 +200,7 @@ export default function MatchDetail() {
       {/* Body */}
       <div className="detail-body">
         {activeTab === "overview" && <OverviewTab match={match} />}
-        {activeTab === "stats" && <EventsTab match={match} />}
+{activeTab === "events" && <EventsTab match={match} />}
         {activeTab === "lineups" && <LineupsTab match={match} />}
       </div>
     </div>

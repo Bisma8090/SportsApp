@@ -107,7 +107,7 @@ let matches = [
     status: "LIVE",
     minute: 67,
     venue: "Etihad Stadium",
-    date: "2025-03-19",
+    date: "2026-03-24",
     events: [
       { minute: 12, team: "man_city", player: "Haaland", type: "goal" },
       { minute: 34, team: "arsenal", player: "Saka", type: "goal" },
@@ -125,7 +125,7 @@ let matches = [
     status: "LIVE",
     minute: 83,
     venue: "Camp Nou",
-    date: "2025-03-19",
+    date: "2026-03-24",
     events: [
       { minute: 23, team: "barcelona", player: "Yamal", type: "goal" },
       { minute: 71, team: "real_madrid", player: "Vinicius", type: "goal" },
@@ -141,7 +141,7 @@ let matches = [
     status: "FT",
     minute: 90,
     venue: "Stamford Bridge",
-    date: "2025-03-19",
+    date: "2026-03-24",
     events: [
       { minute: 11, team: "liverpool", player: "Salah", type: "goal" },
       { minute: 77, team: "liverpool", player: "Núñez", type: "goal" },
@@ -271,8 +271,7 @@ setInterval(() => {
         else match.awayScore++;
       }
 
-      io.to(`match:${match.id}`).emit("match:event", { matchId: match.id, event, match });
-    }
+io.emit("match:event", { matchId: match.id, event, match });    }
 
     if (match.minute >= 90) {
       match.status = "FT";
